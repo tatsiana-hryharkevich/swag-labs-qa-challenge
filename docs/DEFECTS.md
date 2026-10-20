@@ -326,29 +326,35 @@ reaches the server, which answers deliberately with 401.
 
 **Steps:** sign in as any account with the Network panel open and filter for `backtrace`.
 
-**Request**
-```
-POST https://events.backtrace.io/api/unique-events/submit?universe=UNIVERSE&token=TOKEN
-POST https://events.backtrace.io/api/summed-events/submit?universe=UNIVERSE&token=TOKEN
-```
+There are **two channels**, and they fail differently:
 
-**Response:** `401 Unauthorized` — repeated for every submission attempt.
+| Channel | Address | Result |
+|---|---|---|
+| Usage metrics | `POST events.backtrace.io/api/{unique,summed}-events/submit?universe=UNIVERSE&token=TOKEN` | `401 Unauthorized` — `{"error":{"message":"Unauthorized request","code":6}}` |
+| Crash reports | `POST submit.backtrace.io/UNIVERSE/TOKEN/json` | `net::ERR_FAILED` — the request never completes, so there is no status code at all |
 
 **Expected:** telemetry is addressed to the real universe and token for this application
 and is accepted.
-**Actual:** the literal strings `UNIVERSE` and `TOKEN` remain in the query string. They
-are build-time placeholders that were never substituted, so every report is rejected and
-the browser console fills with `Failed to load resource: 401 (Unauthorized)`.
+**Actual:** the literal strings `UNIVERSE` and `TOKEN` survive into the production bundle
+in both the query string and the path. Metrics are rejected and the console fills with
+`Failed to load resource: 401 (Unauthorized)`; crash reports do not complete at all. For
+`error_user`, thirteen crash submissions were attempted in one session and all thirteen
+failed.
 
 **Consequence.** Error reporting does not work in production at all. Every defect in this
 log that raises a console error — DEF-002, DEF-010, DEF-011 — would have been reported
 automatically and was not. The application is blind to its own failures, which is why
 these defects have survived.
 
-**Note for the owner.** Before this is fixed, see Q-08: the telemetry is configured to
-attach the signed-in username and the contents of the cart to every report. Repairing the
-address starts sending customer data to a third party, and whether that is permitted is a
-data-protection decision rather than an engineering one.
+**Note for the owner.** Before this is fixed, see Q-08. The crash-report payload was
+captured and inspected: it carries `attributes.user = "error_user"`,
+`annotations.shoppingCart = [4]`, the whole catalogue, and a breadcrumb trail of the
+customer's recent actions. The metrics channel carries none of that — only browser and
+document metadata. So repairing the address switches on a flow of customer data to a
+third party that is currently blocked by this very defect, and whether that is permitted
+is a data-protection decision rather than an engineering one.
+
+A full write-up with the request and response bodies is in `docs/BUG_REPORT.md`.
 
 **Evidence:** `evidence/har-standard_user.har` and the HAR file of every other account
 

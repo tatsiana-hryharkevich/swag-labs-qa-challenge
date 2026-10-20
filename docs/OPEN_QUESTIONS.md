@@ -178,11 +178,17 @@ rather than as a defect.
 ### Q-08 · Should error telemetry carry the username and cart contents to a third party?
 **Blocking: yes.**
 
-**Observed.** The application initialises an error-reporting service configured to attach
-`userAttributes: { user, shoppingCart }` to every report, so a report carries the signed-in
-username and the contents of the cart to a company outside this one. The configured
-address still contains unreplaced build placeholders, so today nothing is actually
-delivered.
+**Observed.** The crash-report payload was captured from the browser and inspected
+directly, rather than inferred from the configuration. It carries:
+
+- `attributes.user` — the signed-in username, for example `"error_user"`;
+- `annotations.shoppingCart` — the contents of the cart, for example `[4]`;
+- `annotations.InventoryData` — the whole catalogue;
+- a `bt-breadcrumbs` attachment — a trail of the customer's recent actions.
+
+Today none of it is delivered: the address still contains unreplaced build placeholders
+and the request fails before it reaches the service (DEF-012). The separate usage-metrics
+channel carries only browser and document metadata, no customer data.
 
 **Why it matters.** Two separate problems. The broken address means error reporting does
 not work at all, so faults in production go unseen. The payload is the larger question: as
