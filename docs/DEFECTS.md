@@ -10,7 +10,7 @@
 Defects found during execution, and observations that are not defects. Severity
 definitions and the rules every record must satisfy are in the test plan, §8.
 
-**Status: 15 defects recorded, all reproduced in a browser with evidence captured.**
+**Status: 16 defects recorded, all reproduced in a browser with evidence captured.**
 
 Found during exploratory sessions ES-01 to ES-03 on 2026-10-21. Every record below was
 reproduced from a clean browser context; none is carried over from the predictions in
@@ -34,6 +34,7 @@ are reconciled at the end of this document.
 | DEF-013 | The catalogue freezes the browser for five seconds | performance_glitch_user | Major |
 | DEF-014 | One product image is replaced and the layout is broken | visual_user | Minor |
 | DEF-015 | The cart outlives its owner and is shown to the next person who signs in | all accounts | Major |
+| DEF-016 | The typed password is written into the DOM as a plain attribute | all accounts | Minor here, serious elsewhere |
 
 ---
 
@@ -447,6 +448,45 @@ requirement marked as unconfirmed rather than being quietly treated as settled.
 
 **Consequence.** On any shared device, one customer's shopping is disclosed to the next
 person to sign in, and that person can complete a purchase from a cart they did not fill.
+
+---
+
+### DEF-016 · The typed password is written into the DOM as a plain attribute
+
+**Requirement broken:** none stated — found while automating TC-UI-014
+**Covered by test:** TC-UI-014 · **Severity:** Minor *(in this application)* · **Status:** Open
+**Account:** any
+
+**Why this is a defect.** Reproduced from a clean context by typing into the field and
+reading the page's serialised HTML.
+
+**Steps to reproduce**
+1. Open the sign-in page and type a password into the password field.
+2. Read the page source as the browser holds it, for example `document.body.outerHTML`.
+
+**Expected:** the typed value is held as a property of the input, as a browser normally
+keeps it, and does not appear in the serialised markup.
+
+**Actual:** the value is written as an HTML attribute on the element:
+
+```html
+<input data-test="password" id="password" type="password" value="secret_sauce" name="password">
+```
+
+**Consequence.** The field is masked on screen, so this is invisible to a person using
+the application. It is not invisible to anything that captures the DOM: session-replay
+tools, error-reporting agents that attach a page snapshot, browser extensions, or a
+screenshot of the Elements panel. In this application the severity is Minor, because the
+password is published on the sign-in page anyway and there is nothing to protect. The
+same mechanism in a real application would expose every customer's password to
+whatever captures the page — and this application is already configured to send page
+context to a third party (DEF-012, Q-08), which is exactly the combination that turns it
+from a curiosity into an incident.
+
+**How it was found.** Not by exploration: TC-UI-014 was written as a routine check that
+the password is masked, and the second half of the assertion — that the value is not in
+the markup — failed. It is recorded here partly as a defect and partly as evidence that
+automating the obvious checks is worth the time.
 
 ---
 

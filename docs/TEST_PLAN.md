@@ -258,6 +258,16 @@ not allow for P1.
 The same rule governs the suite itself: no test is marked as a known failure until a defect
 has been logged for it (§8).
 
+**A known failure hides more than it reports.** The marker says a test is allowed to fail;
+it does not say *why* it failed. While this suite was being built it contained a fault of its
+own — a page object that returned before the new page had rendered — and the marked
+test for TC-UI-052 went on reporting a tidy expected failure throughout, because failing
+for the wrong reason looks identical to failing for the right one. What exposed it was the
+unmarked twin of the same check running against a healthy account. Two rules follow, and
+both are applied here: a marked test is re-examined whenever the suite changes, and
+wherever it is practical the same assertion also runs unmarked against an account where
+it is expected to pass.
+
 **A note on wording.** This plan says *known failure* throughout. Playwright's own report
 labels the same thing an *expected failure*, and pytest calls it *xfail*. They are the same
 state under three names; where a tool's wording appears on screen, it means what this
@@ -306,7 +316,7 @@ plan calls a known failure.
 | TC-UI-036 | Two different postal codes produce an identical tax amount (→ Q-02) | standard | P2 | Automated |  |
 | TC-UI-037 | Currency symbol and decimal formatting on the cart and checkout pages | standard | P2 | Automated |  |
 | TC-UI-038 | Order total equals the sum of the item prices in the cart | problem | P1 | Automated | predicted |
-| TC-UI-039 | Cart is emptied after the order is completed | error | P2 | Manual | predicted |
+| TC-UI-039 | Cart is emptied after the order is completed | error | P2 | Automated | DEF-002 |
 
 ### 6.3 [UI] Sorting and data display — REQ-003
 

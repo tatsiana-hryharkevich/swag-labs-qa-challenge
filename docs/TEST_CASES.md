@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | Execution record |
-| **Version** | 0.2 — exploratory and manual cases executed; automated suite in progress |
+| **Version** | 0.3 — exploratory cases executed; UI suite built and green; API suite outstanding |
 | **Date** | 2026-10-21 |
 | **Author** | Tatsiana Hryharkevich |
 
@@ -57,6 +57,46 @@ the suite runs.
 | TC-UI-093 | Exploratory | standard | **Failed** | DEF-015 | Cart survives a simulated browser restart |
 | TC-UI-100 | Exploratory | all | **Failed** | DEF-012 | Telemetry returns 401; placeholders left in the URL |
 | TC-UI-102 | Exploratory | error | **Failed** | DEF-010 | Uncaught exceptions on add and remove |
+
+## Automated UI suite — run of 2026-10-21
+
+`npx playwright test` · Chromium 156 · 63 tests · 22.8 s · **0 unexpected results**
+
+| Outcome | Count | Meaning |
+|---|---|---|
+| Passed | 45 | The behaviour is correct |
+| Known failure | 18 | The test asserts correct behaviour, the application does not provide it, and the defect is logged |
+| Failed | 0 | Nothing failed for a reason that is not accounted for |
+| Skipped | 0 | Nothing went unrun |
+
+By priority: 4 `@smoke`, 29 `@P1`, 32 `@P2`, 2 `@P3`. The smoke profile runs in 1.2 s.
+
+The 18 known failures map to 11 distinct defects:
+
+| Defect | Tests marked |
+|---|---|
+| DEF-001 | TC-UI-032 |
+| DEF-002 | TC-UI-039 |
+| DEF-003 | TC-UI-050 (problem_user) |
+| DEF-004 | TC-UI-045, TC-UI-046, TC-UI-047 |
+| DEF-005 | TC-UI-021 (problem_user) |
+| DEF-006 | TC-UI-022 (problem_user) |
+| DEF-007 | TC-UI-052 (problem_user) |
+| DEF-008 | TC-UI-050 (visual_user) |
+| DEF-010 | TC-UI-021 (error_user), TC-UI-102 (error_user) |
+| DEF-011 | TC-UI-051 |
+| DEF-012 | TC-UI-100, TC-UI-101 |
+| DEF-015 | TC-UI-090, TC-UI-093 |
+| DEF-016 | TC-UI-014 |
+
+**TC-UI-044 is deliberately not marked.** Name A to Z is the order the catalogue already
+opens in, so for `problem_user` a broken sort and a working one produce the same result.
+The check is kept because the order it asserts is still correct, but it is no evidence
+either way about DEF-004 — and marking it would have claimed otherwise.
+
+**DEF-016 was found by this suite, not by exploration.** TC-UI-014 was written as a
+routine check that the password field is masked; the second half of the assertion, that
+the value does not appear in the page markup, failed.
 
 ## Not yet executed
 
