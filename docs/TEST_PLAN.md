@@ -482,8 +482,8 @@ removed.
 
 | # | Risk | Mitigation |
 |---|---|---|
-| R1 | ReqRes may require an API key (`x-api-key`), returning 401 | The header is always sent; harmless when unnecessary |
-| R2 | ReqRes rate limiting (429) during a run | Tests skip with a visible reason instead of failing, so an unavailable third party is never reported as a contract defect |
+| R1 | ReqRes may require an API key (`x-api-key`), returning 401 | The header is always sent, and `REQRES_API_KEY` overrides it; harmless when unnecessary. A 401 skips the affected check with that reason rather than failing it |
+| R2 | ReqRes rate limiting (429) during a run. **Measured, not assumed:** the free tier allows **40 requests per day from one address**, and the first draft of the suite spent all forty in a single run | Every response is guarded: a 429 skips that check, naming the call that could not be made, rather than failing it. The suite is written to a request budget — responses needed by more than one check are fetched once and shared — which brought a full run from 40 requests to **29**, and the smoke profile to **3**. Each run prints the number it used |
 | R3 | Vendor marketing fields (`_meta`, `support`) change between responses | Tolerant-reader schemas — strict only on consumed fields |
 | R4 | The slow account freezes the browser for five seconds with a loop, rather than waiting on a slow response. Slowing the network in test tools would not reproduce it | A longer timeout on those tests only; no global waits and no fixed sleeps |
 | R5 | The built-in defects keep the suite permanently red, so a red run stops meaning anything | Known-failure policy, §8 |

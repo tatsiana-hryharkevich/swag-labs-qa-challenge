@@ -1,0 +1,5 @@
+# For reviewers without uv: python -m pip install -r requirements.txt && pytest
+pytest>=8.0
+requests>=2.32
+jsonschema>=4.21
+pytest-html>=4.1

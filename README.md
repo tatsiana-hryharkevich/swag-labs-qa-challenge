@@ -64,6 +64,23 @@ make test-ui        # the Playwright suite only
 make test-api       # the pytest suite only
 ```
 
+### A note on the API suite and its request budget
+
+ReqRes is a public demo service that allows **40 requests per day from one address**
+without an account. A full run of this suite costs **29**; the smoke profile costs **3**,
+and each run prints what it used.
+
+If the allowance is already spent, the suite does not fail — every affected check is
+**skipped with the reason named**, for example
+`ReqRes rate-limited GET /users/2 (429): this check did not run`. That is deliberate: a
+failure would claim the contract is broken, and somebody else's rate limit is not that.
+
+To lift the limit, set an API key from a free ReqRes account:
+
+```bash
+export REQRES_API_KEY=<your key>
+```
+
 ## Reading the results
 
 ```bash

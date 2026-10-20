@@ -1,5 +1,21 @@
 [project]
-name = "swag-labs-test"
-version = "0.1.0"
-requires-python = ">=3.9"
-dependencies = []
+name = "swag-labs-qa-challenge"
+version = "1.0.0"
+description = "API contract tests for ReqRes"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest>=8.0",
+    "requests>=2.32",
+    "jsonschema>=4.21",
+    "pytest-html>=4.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/api"]
+addopts = "-q --strict-markers --html=report.html --self-contained-html"
+markers = [
+    "smoke: the shortest set that proves the service answers at all",
+    "P1: blocks a consumer of this API; part of the CI gate",
+    "P2: degrades behaviour without blocking a consumer",
+    "P3: low impact, or cheap to check but rarely decisive",
+]
