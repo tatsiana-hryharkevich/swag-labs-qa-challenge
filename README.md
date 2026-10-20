@@ -130,12 +130,40 @@ omission.
 
 ## Traceability
 
-*Filled after execution.* Each requirement maps to the cases that cover it, each case to
-the test that runs it, and each failure to a logged defect.
+Each requirement maps to the cases that cover it, each case to the test that runs it, and
+each defect back to the case that found it.
 
-| Requirement | Cases | Automated tests | Defects |
+| Requirement | Cases | Automated | Defects found |
 |---|---|---|---|
-| | | | |
+| REQ-001 | 15 (TC-UI-001–TC-UI-015) | 14 | DEF-014, DEF-016 |
+| REQ-002 | 20 (TC-UI-020–TC-UI-039) | 15 | DEF-001, DEF-002, DEF-005, DEF-006, DEF-009, DEF-010 |
+| REQ-003 | 14 (TC-UI-040–TC-UI-053) | 13 | DEF-003, DEF-004, DEF-007, DEF-008, DEF-011 |
+| REQ-004 | 18 (TC-API-001–TC-API-018) | 17 | — |
+| REQ-005 | 3 (TC-UI-100–TC-UI-102) | 3 | DEF-010, DEF-012 |
+| REQ-006 | 4 (TC-UI-010–TC-UI-013) | 4 | — |
+| REQ-007 | 4 (TC-UI-024, TC-UI-034, TC-UI-090, TC-UI-093) | 3 | DEF-015 |
+| REQ-008 | 3 (TC-API-018, TC-UI-080, TC-UI-081) | 1 | DEF-013 |
+| REQ-009 | 3 (TC-UI-082–TC-UI-084) | 0 | — |
+| REQ-010 | 6 (TC-UI-090–TC-UI-095) | 4 | DEF-015 |
+
+Requirements: 10 · cases in the plan: 81 · cases implemented: 66 · defects linked to a case: 16
+
+**This table is generated, not typed**, and the generator also checks it:
+
+```bash
+python tools/traceability.py            # print the matrix
+python tools/traceability.py --check    # fail if anything is unlinked
+```
+
+A requirement with no case, a test whose case id is not in the plan, or a defect pointing
+at a case that does not exist all fail the check — and the check runs in CI on every
+change. Traceability that nothing verifies is a claim; this is a rule.
+
+Two rows are deliberately short of full automation. REQ-008 and REQ-009 are the
+non-functional checks in the extended block: the performance measurements exist (DEF-013
+records them) but the accessibility scan has not been written. REQ-002 and REQ-003 keep a
+few manual cases where judging the intended behaviour needs a person and no
+specification offers one.
 
 ---
 
