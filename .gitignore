@@ -22,6 +22,5 @@ assets/
 .vscode/
 .DS_Store
 
-# Material belonging to the hiring company — not ours to publish
-QA Engineer Technical Challenge_OCT 26.pdf
-vacancy/
+# Source material kept locally, never published
+*.pdf
