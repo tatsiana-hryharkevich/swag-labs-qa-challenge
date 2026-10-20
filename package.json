@@ -1,0 +1,16 @@
+{
+  "name": "swag-labs-qa-challenge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "UI regression suite for Swag Labs (SauceDemo)",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep @P1",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}
