@@ -100,12 +100,28 @@ Host: submit.backtrace.io
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...
 ```
 
-Result: **`net::ERR_FAILED`** — the request does not complete, so there is no status code
-at all. The path segments `UNIVERSE` and `TOKEN` are not a valid submission endpoint, and
-the request is rejected before a response is produced.
+This one fails in two stages, and the browser console shows both:
+
+```
+Access to fetch at 'https://submit.backtrace.io/UNIVERSE/TOKEN/json' from origin
+'https://www.saucedemo.com' has been blocked by CORS policy: No
+'Access-Control-Allow-Origin' header is present on the requested resource.
+
+POST https://submit.backtrace.io/UNIVERSE/TOKEN/json  net::ERR_FAILED 503 (Service Unavailable)
+```
+
+The service answers **503 Service Unavailable** — the placeholder path is not a valid
+submission endpoint — and does so **without CORS headers**. The browser therefore refuses
+to hand the response to the application, which sees only `net::ERR_FAILED` with no status
+code. The application cannot distinguish "the service is down" from "we are misconfigured",
+so even a developer reading its own error handling would be misled.
+
+Worth noting for the tooling: an automated capture recorded this as `net::ERR_FAILED`
+alone. The underlying 503 and the CORS refusal were visible only in the browser console.
+This is the case where developer tools show more than instrumentation does.
 
 For `error_user`, thirteen of these were attempted in a single session; all thirteen
-failed.
+failed the same way.
 
 ### 5.3 What the crash reports would have carried
 
@@ -133,8 +149,12 @@ of what they were doing, to a company outside this one.
 |---|---|
 | `evidence/har-standard_user.har` | Six rejected telemetry requests in an ordinary session |
 | `evidence/har-error_user.har` | Thirteen failed crash submissions plus six rejected metric requests |
-| `evidence/devtools-network-401.png` | The Network panel with the 401 selected |
-| `evidence/devtools-console-401.png` | The Console filling with the same failure |
+| `evidence/devtools-network-401.png` | The Network panel: Request URL carrying `universe=UNIVERSE&token=TOKEN`, method POST, `401 Unauthorized` |
+| `evidence/devtools-console-401.png` | The Console: repeated 401s, plus the CORS refusal and the 503 behind it |
+
+Both screenshots were taken on the sign-in page, before any account was signed in.
+Telemetry is sent on page load, so this defect is present before a customer does
+anything at all.
 
 Every HAR file can be opened in Chrome: **Network → right-click → Import HAR**.
 

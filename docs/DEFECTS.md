@@ -331,7 +331,7 @@ There are **two channels**, and they fail differently:
 | Channel | Address | Result |
 |---|---|---|
 | Usage metrics | `POST events.backtrace.io/api/{unique,summed}-events/submit?universe=UNIVERSE&token=TOKEN` | `401 Unauthorized` — `{"error":{"message":"Unauthorized request","code":6}}` |
-| Crash reports | `POST submit.backtrace.io/UNIVERSE/TOKEN/json` | `net::ERR_FAILED` — the request never completes, so there is no status code at all |
+| Crash reports | `POST submit.backtrace.io/UNIVERSE/TOKEN/json` | **503 Service Unavailable, returned without CORS headers.** The browser blocks the response, so the application sees only `net::ERR_FAILED` and cannot tell a misconfiguration from an outage |
 
 **Expected:** telemetry is addressed to the real universe and token for this application
 and is accepted.
@@ -356,7 +356,9 @@ is a data-protection decision rather than an engineering one.
 
 A full write-up with the request and response bodies is in `docs/BUG_REPORT.md`.
 
-**Evidence:** `evidence/har-standard_user.har` and the HAR file of every other account
+**Evidence:** `evidence/devtools-network-401.png`, `evidence/devtools-console-401.png`,
+`evidence/har-standard_user.har` and the HAR file of every other account. Full write-up
+with request and response bodies: `docs/BUG_REPORT.md`.
 
 ---
 
@@ -514,6 +516,25 @@ the sign-in page rather than re-displaying the catalogue.
 **Arithmetic on the order summary is correct** for every account that can reach it.
 Three items totalling $73.97 produced `Tax: $5.92` and `Total: $79.89`; 8% of $73.97 is
 $5.9176, correctly rounded. The same held for `error_user` at a different basket value.
+
+---
+
+### OBS-03 · A deprecated unload handler is blocked by browser policy
+
+Seen in the console on every page load, alongside the telemetry failures:
+
+```
+[Violation] Permissions policy violation: unload is not allowed in this document.
+```
+
+The application registers an `unload` handler, which current Chrome refuses to run under
+its default permissions policy. Browsers have been removing `unload` for years because it
+makes pages ineligible for the back/forward cache and fires unreliably on mobile.
+
+**Why it is recorded rather than reported.** No requirement is breached and nothing
+visible to a customer changes, so it is not a defect. It is worth the owner's attention
+for two reasons: whatever the handler was meant to do is not happening, and the
+registration alone may be costing the page its back/forward cache eligibility.
 
 ---
 
