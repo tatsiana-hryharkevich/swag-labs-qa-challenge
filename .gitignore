@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Test output (generated on every run, never committed)
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+.pytest_cache/
+report.html
+assets/
+
+# Environment
+.env
+.env.local
+
+# Editor and OS
+.idea/
+.vscode/
+.DS_Store
+
+# Material belonging to the hiring company — not ours to publish
+QA Engineer Technical Challenge_OCT 26.pdf
+vacancy/
