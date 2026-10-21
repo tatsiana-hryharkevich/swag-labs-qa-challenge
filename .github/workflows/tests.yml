@@ -5,8 +5,9 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    # Nightly: catches drift in two third-party systems we do not control.
-    - cron: '0 3 * * *'
+    # Weeknights only: catches drift in two third-party systems we do not control.
+    # Nobody acts on a weekend result, and an unread red run erodes trust in the gate.
+    - cron: '0 3 * * 1-5'
   workflow_dispatch:
     inputs:
       profile:
