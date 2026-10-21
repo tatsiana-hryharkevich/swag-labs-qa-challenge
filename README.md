@@ -398,13 +398,6 @@ What is never cut is items 1 and 4 of the table above: the planning documents an
 defect records. Coverage can be reported as incomplete; a finding that was seen and not
 written down cannot be recovered at all.
 
-**Defect work is budgeted, not assumed.** This is the part a time plan usually omits.
-Each of the 18 defects cost: reproduce from a clean session, confirm it is not an
-environment artefact, capture the evidence at the moment it is visible, and write it up
-well enough that a developer needs no follow-up question. Across 18 defects that was
-comparable to the time spent writing both suites. A plan that budgets only for *running*
-tests ends the day with "we found about twenty things" and nothing anyone can act on.
-
 **Skipped outright, each with the reason recorded in §2.3:** load testing, because these
 are public demo sites belonging to someone else; visual regression, because reference
 images taken on one machine do not match another and the tests would fail for the wrong
