@@ -347,8 +347,7 @@ requirement rather than a preference for a public-facing shop. Automated rule ch
 belong in CI, but they find roughly a third of the problem. The rest is manual and
 matters more: keyboard navigation through the whole purchase path, a visible focus
 indicator, form labels correctly associated with their inputs, error messages announced
-rather than merely coloured, and a screen reader run through checkout. A shop that
-cannot be used without a mouse cannot be bought from.
+rather than merely coloured, and a screen reader run through checkout.
 
 ### 5. Given only four hours, how did you decide what to test manually, what to automate, and what to skip?
 
