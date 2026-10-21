@@ -153,7 +153,7 @@ python tools/traceability.py --check    # fail if anything is unlinked
 
 A requirement with no case, a test whose case id is not in the plan, or a defect pointing
 at a case that does not exist all fail the check — and the check runs in CI on every
-change. Traceability that nothing verifies is a claim; this is a rule.
+change.
 
 ---
 
@@ -420,6 +420,5 @@ questions about regional tax, stock and the cart lifecycle that became the block
 questions — those came from asking what a real shop must define, which is not something
 a tool volunteers.
 
-Several rounds went into making the documents readable: terminology was unified,
-dense phrasing rewritten in plain words, and a glossary added. I can explain every line of
-what is here, which was the point of working this way rather than accepting a first draft.
+Several rounds went into making the documents readable: terminology was unified, dense
+phrasing rewritten in plain words, and a glossary added.

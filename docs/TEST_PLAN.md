@@ -643,9 +643,8 @@ The recommendation is one short statement built from the table above. Its shape:
 > blocking a decision: one — Q-02, regional tax. **Recommendation: hold the release until
 > Q-02 is answered. Everything else is within the agreed thresholds.**
 
-It names the risk, shows the evidence, and says who has to decide. It never says "it
-works", because that is not a statement testing can support — only "these checks passed,
-these did not, and this is what remains unknown".
+It never says "it works", because that is not a statement testing can support — only
+"these checks passed, these did not, and this is what remains unknown".
 
 ## 15. What would come next, in the order it should be done
 

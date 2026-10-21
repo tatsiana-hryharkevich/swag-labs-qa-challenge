@@ -7,12 +7,9 @@
 | **Date** | 2026-10-21 |
 | **Author** | Tatsiana Hryharkevich |
 
-Exploratory testing here is not unstructured. Each session has a charter written before it
-starts, a fixed time box, and a written debrief afterwards. That makes the work
-reviewable: a reader can see what was investigated, what was found, what was left
-untouched, and how the time was actually spent.
-
-Charters are defined in the test plan, §6.6.
+Each session below has a charter written before it started, a fixed time box, and a
+debrief recording what was covered, what was found, what was left untouched, and how the
+time actually went. Charters are defined in the test plan, §6.6.
 
 ## How these sessions were run
 

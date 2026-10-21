@@ -20,8 +20,7 @@
 | Catalogue | 0 | 27 | 1 |
 | Checkout form | 0 | 28 | — |
 
-That result is worth less than it appears, and saying so is the point of this document.
-Automated rules find roughly a third of accessibility problems — the ones a machine can
+That result is worth less than it appears. Automated rules find roughly a third of accessibility problems — the ones a machine can
 decide, such as a missing label or an image without alternative text. The remaining
 two-thirds are judgements a person makes: whether the keyboard order is sensible, whether
 focus is visible, whether an error is announced rather than merely coloured, whether a
@@ -53,8 +52,7 @@ Beyond that single flagged item, none of the following was performed, and all of
 matters more than the rules that were checked:
 
 - **Keyboard navigation through the whole purchase path** — sign in, choose a product,
-  add to the cart, complete checkout, without touching a mouse. A shop that cannot be
-  bought from with a keyboard cannot be bought from by a large group of customers.
+  add to the cart, complete checkout, without touching a mouse.
 - **Focus visibility and order** — whether the focused element is always identifiable
   and whether the order follows the visible layout.
 - **Error announcement** — the sign-in and checkout errors are rendered in red. Whether
