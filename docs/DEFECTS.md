@@ -3,14 +3,26 @@
 | | |
 |---|---|
 | **Document** | Defect log and observations |
-| **Version** | 0.1 — no cases executed yet |
-| **Date** | 2026-10-20 |
+| **Version** | 1.0 |
+| **Date** | 2026-10-21 |
 | **Author** | Tatsiana Hryharkevich |
 
-Defects found during execution, and observations that are not defects. Severity
-definitions and the rules every record must satisfy are in the test plan, §8.
+Defects found during execution, and observations that are not defects. The rules every
+record must satisfy — including why a record has to justify itself as a defect rather
+than an environment problem — are in the test plan, §8.
 
-**Status: 17 defects recorded, all reproduced in a browser with evidence captured.**
+**Severity**, as defined in test plan §8 and repeated here so this log can be read on its
+own. Severity is the tester's assessment of the damage; priority is the business's
+decision about when it is fixed, and the two are recorded separately.
+
+| Severity | Definition |
+|---|---|
+| **Critical** | Core flow unusable, no workaround: cannot sign in, cannot complete an order, data loss |
+| **Major** | Significant function broken or data shown incorrectly; a workaround exists |
+| **Minor** | Limited impact: cosmetic defect, unclear message, inconsistent behaviour in a secondary path |
+| **Trivial** | Noticeable but harmless: wording, spacing, minor inconsistency |
+
+**Status: 18 defects recorded, all reproduced in a browser with evidence captured.**
 
 Found during exploratory sessions ES-01 to ES-03 on 2026-10-21. Every record below was
 reproduced from a clean browser context; none is carried over from the predictions in
@@ -36,8 +48,13 @@ are reconciled at the end of this document.
 | DEF-015 | The cart outlives its owner and is shown to the next person who signs in | all accounts | Major |
 | DEF-016 | The typed password is written into the DOM as a plain attribute | all accounts | Minor here, serious elsewhere |
 | DEF-017 | The API reports a *missing* API key on a request that sent one | ReqRes | Minor |
+| DEF-018 | A required field accepts whitespace, so an order completes with a blank name | all accounts | Major |
 
 ---
+
+---
+
+## Defects
 
 ### DEF-001 · Checkout cannot be completed: the Last Name field writes into First Name
 
@@ -80,6 +97,7 @@ those pages can be found or ruled out for this account.
 **Evidence:** `evidence/problem_user-lastname-blocked.png`, `evidence/har-problem_user.har`
 
 ---
+---
 
 ### DEF-002 · An order cannot be completed: Finish does nothing and the cart is not cleared
 
@@ -114,6 +132,7 @@ paid for.
 (`cesetRart` rather than `resetCart`), so it throws before navigation is reached.
 
 ---
+---
 
 ### DEF-003 · Every product image is replaced with a placeholder
 
@@ -136,6 +155,7 @@ whether a customer can choose one.
 **Evidence:** `evidence/problem_user-catalogue.png`
 
 ---
+---
 
 ### DEF-004 · Sorting has no effect in any of the four modes
 
@@ -157,6 +177,7 @@ workaround exists: the control is the only way to sort.
 `Backpack, Bike Light, Bolt T-Shirt, Fleece Jacket, Onesie, Test.allTheThings()`.
 The control shows the chosen option, so the interface reports a state it has not applied.
 
+---
 ---
 
 ### DEF-005 · "Add to cart" silently does nothing for half the catalogue
@@ -181,6 +202,7 @@ interface claims the item is in the cart while the cart disagrees.
 opposite.
 
 ---
+---
 
 ### DEF-006 · "Remove" never removes anything
 
@@ -198,6 +220,7 @@ this cart stays there.
 **Consequence.** A customer cannot correct a mistake, and cannot reduce an order they
 have changed their mind about.
 
+---
 ---
 
 ### DEF-007 · A product tile opens a different product
@@ -218,6 +241,7 @@ next product, at a different price.
 **Consequence.** A customer reading a product's details is reading about a different
 product, which is the kind of defect that produces returns rather than complaints.
 
+---
 ---
 
 ### DEF-008 · Catalogue prices are random and do not match the price charged
@@ -248,6 +272,7 @@ business impact argues for a higher priority than the severity alone suggests.
 **Evidence:** `evidence/visual_user-catalogue.png`
 
 ---
+---
 
 ### DEF-009 · Checkout accepts an empty Last Name
 
@@ -266,6 +291,7 @@ leave Last Name empty, select Continue.
 **Consequence.** Orders can be placed with incomplete delivery details, which fails at
 fulfilment rather than at the point where it could still be corrected.
 
+---
 ---
 
 ### DEF-010 · "Add to cart" throws and silently fails for half the catalogue
@@ -290,6 +316,7 @@ if monitoring worked — which it does not, see DEF-012.
 **Evidence:** `evidence/har-error_user.har`
 
 ---
+---
 
 ### DEF-011 · Sorting shows a blocking alert and does nothing
 
@@ -309,6 +336,7 @@ directly to the customer, naming an internal tool. Error handling of this kind b
 log, not in a modal in front of a buyer. The claim it makes is also false — the report is
 rejected, see DEF-012.
 
+---
 ---
 
 ### DEF-012 · Error telemetry is rejected: build placeholders were never replaced
@@ -362,6 +390,7 @@ A full write-up with the request and response bodies is in `docs/BUG_REPORT.md`.
 with request and response bodies: `docs/BUG_REPORT.md`.
 
 ---
+---
 
 ### DEF-013 · The catalogue freezes the browser for five seconds
 
@@ -395,6 +424,7 @@ and the delay happens during rendering. The figures above were taken by measurin
 time until catalogue content is actually visible, which is what a customer experiences.
 
 ---
+---
 
 ### DEF-014 · One product image is replaced and the layout is broken
 
@@ -411,6 +441,7 @@ aligned left, and one "Add to cart" button is positioned out of line with the ot
 account carries DEF-008, and a reader comparing the two should be able to see which
 findings are cosmetic and which are not.
 
+---
 ---
 
 ### DEF-015 · The cart outlives its owner and is shown to the next person who signs in
@@ -459,6 +490,7 @@ requirement marked as unconfirmed rather than being quietly treated as settled.
 person to sign in, and that person can complete a purchase from a cart they did not fill.
 
 ---
+---
 
 ### DEF-016 · The typed password is written into the DOM as a plain attribute
 
@@ -498,26 +530,6 @@ the markup — failed. It is recorded here partly as a defect and partly as evid
 automating the obvious checks is worth the time.
 
 ---
-
-## Checks that passed, and are worth stating
-
-A defect log that lists only failures tells a reader nothing about what was verified.
-
-**Access control is correct on every route.** All nine pages — the five linked ones, plus
-the four that no menu links to — refuse access without a session and show a specific
-message naming the page, for example
-`Epic sadface: You can only access '/checkout-step-two.html' when you are logged in.`
-No page leaked content. This also answers part of Q-06: the four unlinked routes are real,
-guarded pages rather than dead code.
-
-**Signing out ends the session properly.** After sign-out the session cookie is removed,
-and using the browser's Back button does not restore access — the application returns to
-the sign-in page rather than re-displaying the catalogue.
-
-**Arithmetic on the order summary is correct** for every account that can reach it.
-Three items totalling $73.97 produced `Tax: $5.92` and `Total: $79.89`; 8% of $73.97 is
-$5.9176, correctly rounded. The same held for `error_user` at a different basket value.
-
 ---
 
 ### DEF-017 · The API reports a missing API key on a request that sent one
@@ -569,76 +581,55 @@ message claimed. Two things had to be separated before the finding was visible: 
 suite's own handling of 401, and what a 401 actually meant here.
 
 ---
+---
 
-### OBS-03 · A deprecated unload handler is blocked by browser policy
+### DEF-018 · A required field accepts whitespace, so an order completes with a blank name
 
-Seen in the console on every page load, alongside the telemetry failures:
+**Requirement broken:** REQ-002 — `REQUIREMENTS.md`
+> "Cart & Checkout Flow: verify add/remove from cart, checkout form validation (empty
+> fields, **invalid data**), and order completion."
+> — Challenge brief, page 3, scenario 2
 
-```
-[Violation] Permissions policy violation: unload is not allowed in this document.
-```
+**Covered by test:** TC-UI-033 · **Severity:** Major · **Priority:** Medium · **Status:** Open
+**Account:** all
 
-The application registers an `unload` handler, which current Chrome refuses to run under
-its default permissions policy. Browsers have been removing `unload` for years because it
-makes pages ineligible for the back/forward cache and fires unreliably on mobile.
+**Why this is a defect.** The application states the rule itself: leaving a field empty is
+refused with `Error: First Name is required`. Three spaces are not a name, and the same
+field accepts them. This is measured against the application's own stated behaviour, not
+against an outside expectation, so it does not depend on a specification nobody wrote.
+Reproduced from a clean session.
 
-**Why it is recorded rather than reported.** No requirement is breached and nothing
-visible to a customer changes, so it is not a defect. It is worth the owner's attention
-for two reasons: whatever the handler was meant to do is not happening, and the
-registration alone may be costing the page its back/forward cache eligibility.
+**Steps to reproduce**
+1. Sign in as any account, add an item and reach the checkout form.
+2. Type three spaces into First Name, Last Name and Postal Code.
+3. Select Continue, then Finish.
+
+**Expected:** the same refusal the form gives for an empty field.
+
+**Actual:** the form accepts the input, the order overview is reached, and selecting
+Finish completes the order — `Thank you for your order!` — with a blank name and a blank
+postal code.
+
+**Consequence.** The required-field rule exists and does not hold, which is worse than
+having no rule: the business believes it is collecting a delivery name. In a shop with
+fulfilment behind it, the order would fail at the point where it can no longer be
+corrected. Here nothing is shipped, which is the only reason this is Major rather than
+Critical.
+
+**Suggested fix.** Trim the value before the emptiness check — the one-line version of
+the fix — and decide a minimum beyond "not blank" for each field. See OBS-04: no field
+has any format rule at all today.
 
 ---
 
-## Seeded by design, or genuinely found?
 
-SauceDemo is a training fixture whose defects are deliberately planted and switched on by
-the account signing in. Finding those shows the ground was covered; it is not a discovery.
-This separation is the honest reading of the log.
-
-**Planted — gated on a username, and there to be found (13)**
-
-DEF-001 to DEF-011, DEF-013, DEF-014. Every one of them is behind a check on the
-signed-in account in the application's own code (`docs/STATIC_ANALYSIS.md`, section 4).
-`standard_user` experiences none of them.
-
-**Not planted — properties of the build, affecting everyone (4)**
-
-| Defect | Why it is not part of the exercise |
-|---|---|
-| **DEF-012** | Error telemetry addressed to unreplaced build placeholders. Affects all six accounts, including `standard_user`. A configuration mistake that shipped, not a lesson someone wrote. |
-| **DEF-015** | The cart is held in `localStorage` and nothing clears it at sign-out, so it crosses between people on one browser. No account check is involved — it is how the state model works. |
-| **DEF-016** | The typed password is written into the DOM as a plain HTML attribute. A property of how the form is built, present for every account. |
-| **DEF-017** | The API reports a *missing* API key on a request that sent one. A different system entirely, and nothing about ReqRes is seeded. |
-
-Two of these four were found by the automated suites rather than by exploring: DEF-016 by
-a routine check that the password field is masked, DEF-017 by a test asserting that an
-unknown path returns 404. Neither would have been noticed by clicking through the
-application, which is the clearest argument in this exercise for automating the obvious
-checks and not only the interesting ones.
-
-## Reconciliation with the static analysis
-
-`STATIC_ANALYSIS.md` made predictions from reading the application's code. Honesty
-about which held up matters more than the count:
-
-| Prediction | Outcome |
-|---|---|
-| All images replaced for `problem_user` | **Confirmed** — DEF-003 |
-| Product tile opens the next product | **Confirmed** — DEF-007, `id=4` → `id=5` |
-| Add works for only half the items; Remove never works | **Confirmed** — DEF-005, DEF-006, and the two rules interlock exactly as predicted |
-| Sorting never applies for `problem_user` | **Confirmed** — DEF-004 |
-| Last Name writes into First Name | **Confirmed** — DEF-001, and the mechanism is visible in the result |
-| `error_user`: validation skipped, exceptions thrown, alert shown, cart not cleared | **Confirmed** — DEF-002, DEF-009, DEF-010, DEF-011 |
-| `visual_user`: random prices | **Confirmed** — DEF-008, and execution revealed more than the code reading did: the price charged is the real one, so displayed and charged disagree |
-| Telemetry addressed to unreplaced placeholders | **Confirmed** — DEF-012, with the exact request and a 401 response |
-| `problem_user`: order total doubled | **Not reachable.** The code exists, but checkout cannot be passed with this account (DEF-001), so no customer can ever reach the page where doubling would occur. Recorded here rather than as a defect: a fault that no user can reach is not one, and if DEF-001 is fixed this one appears. |
-| `performance_glitch_user` freezes the browser | **Confirmed, but only after the measurement was corrected** — see the note in DEF-013 |
+---
 
 ## Observations
 
 Findings that are **not** defects: no requirement is breached, so nothing is being
-claimed as broken. They are recorded because they change what a reader should
-believe about the system, and several of them feed open questions.
+claimed as broken. They are recorded because they change what a reader should believe
+about the system, and several of them feed open questions.
 
 ### OBS-01 · The brief documents four accounts; the application offers six
 
@@ -657,6 +648,7 @@ whoever owns the documentation can decide which of the three it is.
 in three further cases because its deliberate faults are the clearest available evidence of
 console and network defects.
 
+---
 ---
 
 ### OBS-02 · Credentials and session state live entirely in the browser
@@ -677,3 +669,137 @@ recorded anyway because in a real application each of these three would be Criti
 a tester who noticed them and said nothing would not be doing the job. The third point
 also underlies Q-02: an amount calculated in the browser is not an amount the business
 controls.
+---
+
+### OBS-03 · A deprecated unload handler is blocked by browser policy
+
+Seen in the console on every page load, alongside the telemetry failures:
+
+```
+[Violation] Permissions policy violation: unload is not allowed in this document.
+```
+
+The application registers an `unload` handler, which current Chrome refuses to run under
+its default permissions policy. Browsers have been removing `unload` for years because it
+makes pages ineligible for the back/forward cache and fires unreliably on mobile.
+
+**Why it is recorded rather than reported.** No requirement is breached and nothing
+visible to a customer changes, so it is not a defect. It is worth the owner's attention
+for two reasons: whatever the handler was meant to do is not happening, and the
+registration alone may be costing the page its back/forward cache eligibility.
+
+---
+---
+
+### OBS-04 · The checkout form has no format validation of any kind
+
+Ten inputs were tried across the three fields. All ten were accepted:
+
+| Input | Result |
+|---|---|
+| digits instead of a name — `12345` | accepted |
+| punctuation only — `!@#$%^&*()` | accepted |
+| 500 characters | accepted |
+| whitespace only | accepted — raised separately as DEF-018 |
+| leading and trailing spaces | accepted |
+| markup — `<script>alert(1)</script>` | accepted |
+| an SQL-shaped string — `' OR 1=1 --` | accepted |
+| non-Latin characters and an emoji | accepted |
+| letters in the postal code | accepted |
+| a single character | accepted |
+
+**Why this is recorded and not reported.** No specification states a format for any of
+these fields, so "invalid" is our opinion rather than a breached rule — with the one
+exception the application decides for itself, which is DEF-018. Several of these are also
+defensible: names do legitimately contain non-Latin characters, apostrophes and emoji, and
+over-strict name validation excludes real customers. Postal codes vary by country, which
+cannot be settled before Q-02 says which countries the shop serves.
+
+**What an owner should decide.** A maximum length for each field — 500 characters is not a
+name under any rule. Whether the postal code should be validated against the regions
+served. And what happens to markup on its way to an order confirmation or a warehouse
+system: nothing here is stored or rendered anywhere else, so there is no injection to
+demonstrate, but that is a property of a demo with no backend rather than of the input
+handling.
+
+The automated cases under TC-UI-033 assert that these inputs are accepted. They record
+today's behaviour so that adding validation later is a deliberate, visible change rather
+than a silent one.
+
+---
+
+
+---
+
+## Checks that passed, and are worth stating
+
+A defect log that lists only failures tells a reader nothing about what was verified.
+
+**Access control is correct on every route.** All nine pages — the five linked ones, plus
+the four that no menu links to — refuse access without a session and show a specific
+message naming the page, for example
+`Epic sadface: You can only access '/checkout-step-two.html' when you are logged in.`
+No page leaked content. This also answers part of Q-06: the four unlinked routes are real,
+guarded pages rather than dead code.
+
+**Signing out ends the session properly.** After sign-out the session cookie is removed,
+and using the browser's Back button does not restore access — the application returns to
+the sign-in page rather than re-displaying the catalogue.
+
+**Arithmetic on the order summary is correct** for every account that can reach it.
+Three items totalling $73.97 produced `Tax: $5.92` and `Total: $79.89`; 8% of $73.97 is
+$5.9176, correctly rounded. The same held for `error_user` at a different basket value.
+
+---
+
+
+---
+
+## Seeded by design, or genuinely found?
+
+SauceDemo is a training fixture whose defects are deliberately planted and switched on by
+the account signing in. Finding those shows the ground was covered; it is not a discovery.
+This separation is the honest reading of the log.
+
+**Planted — gated on a username, and there to be found (13)**
+
+DEF-001 to DEF-011, DEF-013, DEF-014. Every one of them is behind a check on the
+signed-in account in the application's own code (`docs/STATIC_ANALYSIS.md`, section 4).
+`standard_user` experiences none of them.
+
+**Not planted — properties of the build, affecting everyone (5)**
+
+| Defect | Why it is not part of the exercise |
+|---|---|
+| **DEF-012** | Error telemetry addressed to unreplaced build placeholders. Affects all six accounts, including `standard_user`. A configuration mistake that shipped, not a lesson someone wrote. |
+| **DEF-015** | The cart is held in `localStorage` and nothing clears it at sign-out, so it crosses between people on one browser. No account check is involved — it is how the state model works. |
+| **DEF-016** | The typed password is written into the DOM as a plain HTML attribute. A property of how the form is built, present for every account. |
+| **DEF-017** | The API reports a *missing* API key on a request that sent one. A different system entirely, and nothing about ReqRes is seeded. |
+| **DEF-018** | A required field accepts whitespace. No account check is involved: the rule is simply not enforced for anyone. |
+
+Two of these four were found by the automated suites rather than by exploring: DEF-016 by
+a routine check that the password field is masked, DEF-017 by a test asserting that an
+unknown path returns 404. Neither would have been noticed by clicking through the
+application, which is the clearest argument in this exercise for automating the obvious
+checks and not only the interesting ones.
+
+
+---
+
+## Reconciliation with the static analysis
+
+`STATIC_ANALYSIS.md` made predictions from reading the application's code. Honesty
+about which held up matters more than the count:
+
+| Prediction | Outcome |
+|---|---|
+| All images replaced for `problem_user` | **Confirmed** — DEF-003 |
+| Product tile opens the next product | **Confirmed** — DEF-007, `id=4` → `id=5` |
+| Add works for only half the items; Remove never works | **Confirmed** — DEF-005, DEF-006, and the two rules interlock exactly as predicted |
+| Sorting never applies for `problem_user` | **Confirmed** — DEF-004 |
+| Last Name writes into First Name | **Confirmed** — DEF-001, and the mechanism is visible in the result |
+| `error_user`: validation skipped, exceptions thrown, alert shown, cart not cleared | **Confirmed** — DEF-002, DEF-009, DEF-010, DEF-011 |
+| `visual_user`: random prices | **Confirmed** — DEF-008, and execution revealed more than the code reading did: the price charged is the real one, so displayed and charged disagree |
+| Telemetry addressed to unreplaced placeholders | **Confirmed** — DEF-012, with the exact request and a 401 response |
+| `problem_user`: order total doubled | **Not reachable.** The code exists, but checkout cannot be passed with this account (DEF-001), so no customer can ever reach the page where doubling would occur. Recorded here rather than as a defect: a fault that no user can reach is not one, and if DEF-001 is fixed this one appears. |
+| `performance_glitch_user` freezes the browser | **Confirmed, but only after the measurement was corrected** — see the note in DEF-013 |

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | Execution record |
-| **Version** | 0.3 — exploratory cases executed; UI suite built and green; API suite outstanding |
+| **Version** | 1.0 — all cases executed; both suites green |
 | **Date** | 2026-10-21 |
 | **Author** | Tatsiana Hryharkevich |
 
@@ -60,18 +60,18 @@ the suite runs.
 
 ## Automated UI suite — run of 2026-10-21
 
-`npx playwright test` · Chromium 156 · 63 tests · 22.8 s · **0 unexpected results**
+`npx playwright test` · Chromium 156 · 75 tests · 26 s · **0 unexpected results**
 
 | Outcome | Count | Meaning |
 |---|---|---|
-| Passed | 45 | The behaviour is correct |
-| Known failure | 18 | The test asserts correct behaviour, the application does not provide it, and the defect is logged |
+| Passed | 56 | The behaviour is correct, or today's behaviour is recorded for regression |
+| Known failure | 19 | The test asserts correct behaviour, the application does not provide it, and the defect is logged |
 | Failed | 0 | Nothing failed for a reason that is not accounted for |
 | Skipped | 0 | Nothing went unrun |
 
-By priority: 4 `@smoke`, 29 `@P1`, 32 `@P2`, 2 `@P3`. The smoke profile runs in 1.2 s.
+The smoke profile runs in under two seconds.
 
-The 18 known failures map to 11 distinct defects:
+The known failures map to 12 distinct defects:
 
 | Defect | Tests marked |
 |---|---|
@@ -88,6 +88,7 @@ The 18 known failures map to 11 distinct defects:
 | DEF-012 | TC-UI-100, TC-UI-101 |
 | DEF-015 | TC-UI-090, TC-UI-093 |
 | DEF-016 | TC-UI-014 |
+| DEF-018 | TC-UI-033 |
 
 **TC-UI-044 is deliberately not marked.** Name A to Z is the order the catalogue already
 opens in, so for `problem_user` a broken sort and a working one produce the same result.
@@ -98,8 +99,19 @@ either way about DEF-004 — and marking it would have claimed otherwise.
 routine check that the password field is masked; the second half of the assertion, that
 the value does not appear in the page markup, failed.
 
-## Not yet executed
+## API suite — run of 2026-10-21
 
-Everything not listed above. The automated suite covers most of it; the remaining manual
-cases — boundary input on the checkout form (TC-UI-033), the empty-cart checkout
-(TC-UI-031), availability (TC-UI-094, TC-UI-095) — and the whole API block are still to run.
+`pytest tests/api` · **31 tests, 31 passed, 0 skipped** (CI runner; locally the daily
+request allowance was already spent, and the suite skipped with the reason named, which
+is the designed behaviour).
+
+## Not executed, and why
+
+| Case | Reason |
+|---|---|
+| TC-UI-031 — checkout with an empty cart | P2, manual. Not reached within the time box. The application allows it; what *should* happen is undefined and would feed a question rather than a result. |
+| TC-UI-034 — cart state after re-login as the same user | P3. Superseded in practice by TC-UI-090, which covers the stronger cross-user case and found DEF-015. |
+| TC-UI-053b — sort selection after navigating away | P3, manual. Cut as the lowest-value case in the matrix. |
+| TC-UI-094, TC-UI-095 — availability | P3. **Cannot be executed**: the application has no concept of stock, so there is nothing to test. Recorded as a gap in requirements (Q-05), not as untested coverage. |
+
+No P1 case is unexecuted, which is what the exit criteria in test plan §7 require.

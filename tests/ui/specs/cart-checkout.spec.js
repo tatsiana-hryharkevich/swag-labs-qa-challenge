@@ -129,6 +129,36 @@ test.describe('Checkout [REQ-002]', () => {
     expect(usa.tax).toBe(spain.tax);
   });
 
+  test('TC-UI-033 @P2 a name of only whitespace is refused', async ({ signInAs, cartPage, checkoutPage, page }) => {
+    knownFailure('DEF-018', 'the form checks only that a field is non-empty, so three spaces satisfy "required"');
+    await cartWithThreeItems(signInAs, cartPage);
+    await checkoutPage.fillDetails({ first: '   ', last: '   ', postal: '   ' });
+    await checkoutPage.continue();
+    expect(await checkoutPage.errorText()).toContain('required');
+    await expect(page).toHaveURL(/checkout-step-one/);
+  });
+
+  // Records what the form accepts rather than judging it: no specification states a
+  // format for any of these fields, so nothing here is reported as a defect. The value
+  // is as a regression guard -- if validation is added later, these change, and the
+  // change will be deliberate.
+  for (const [label, value] of [
+    ['digits in place of a name', '12345'],
+    ['punctuation only', '!@#$%^&*()'],
+    ['five hundred characters', 'A'.repeat(500)],
+    ['markup', '<script>alert(1)</script>'],
+    ['an SQL-shaped string', "' OR 1=1 --"],
+    ['non-Latin characters and an emoji', 'Татьяна 🙂'],
+    ['a single character', 'A'],
+  ]) {
+    test(`TC-UI-033 @P3 the form accepts ${label}`, async ({ signInAs, cartPage, checkoutPage, page }) => {
+      await cartWithThreeItems(signInAs, cartPage);
+      await checkoutPage.fillDetails({ first: value, last: value, postal: value });
+      await checkoutPage.continue();
+      await expect(page).toHaveURL(/checkout-step-two/);
+    });
+  }
+
   test('TC-UI-030 @P2 cancelling returns to the cart with the items intact', async ({ signInAs, cartPage, checkoutPage, page }) => {
     await cartWithThreeItems(signInAs, cartPage);
     await checkoutPage.cancel();

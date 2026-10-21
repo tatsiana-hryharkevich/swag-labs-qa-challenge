@@ -163,7 +163,7 @@ change. Traceability that nothing verifies is a claim; this is a rule.
 
 | Suite | Tests | Passed | Known failures | Unexplained failures |
 |---|---|---|---|---|
-| UI (Playwright) | 67 | 49 | 18 | **0** |
+| UI (Playwright) | 75 | 56 | 19 | **0** |
 | API (pytest) | 31 | 31 | 0 | **0** |
 
 Every known failure names the defect it waits on. No test carries that marker without a
@@ -171,12 +171,12 @@ logged defect behind it, and the smoke profile runs in under two seconds.
 
 ### What was found
 
-**17 defects, 3 observations and 13 open questions.**
+**18 defects, 4 observations and 13 open questions.**
 
 | Severity | Count |
 |---|---|
 | Critical | 2 |
-| Major | 12 |
+| Major | 13 |
 | Minor | 3 |
 
 The two Critical defects are the same failure wearing different clothes: **neither
@@ -184,21 +184,22 @@ The two Critical defects are the same failure wearing different clothes: **neith
 application says nothing at all. One cannot pass the checkout form because the Last Name
 field writes into First Name; the other can, but the Finish button silently does nothing.
 
-**Thirteen of the seventeen were planted** — SauceDemo switches defects on by account, by
-design. Four were not, and those are the ones worth reading: broken error telemetry
-(DEF-012), a cart that crosses between people on a shared browser (DEF-015), a password
-written into the DOM as plain text (DEF-016), and an API that reports a missing key on a
-request that sent one (DEF-017). Two of the four were found by the automated suites
-rather than by exploring.
+**Thirteen of the eighteen were planted** — SauceDemo switches defects on by account, by
+design. Five were not, and those are the ones worth reading: broken error telemetry (DEF-012), a
+cart that crosses between people on a shared browser (DEF-015), a password written into
+the DOM as plain text (DEF-016), an API that reports a missing key on a request that sent
+one (DEF-017), and a required field that accepts three spaces and lets an order complete
+with a blank name (DEF-018). Three of the five were found by the automated suites rather
+than by exploring.
 
 ### The release recommendation
 
 Judged against the criteria in test plan §14, with the caveat that neither system is ours
 to release:
 
-> UI suite: 67 of 67 executed — 49 passed, 18 known failures, all logged and linked. API
-> suite: 31 of 31 executed, all passed. Defects: 2 Critical open with no workaround, 12
-> Major, 3 Minor. Open questions blocking a decision: 6.
+> UI suite: 75 of 75 executed — 56 passed, 19 known failures, all logged and linked.
+> API suite: 31 of 31 executed, all passed. Defects: 2 Critical open with no
+> workaround, 13 Major, 3 Minor. Open questions blocking a decision: 6.
 >
 > **Recommendation: do not ship.** Two accounts cannot complete a purchase at all, which
 > is a stop criterion on its own. Separately, Q-02 — which regions the shop serves and how
