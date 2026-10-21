@@ -589,6 +589,33 @@ registration alone may be costing the page its back/forward cache eligibility.
 
 ---
 
+## Seeded by design, or genuinely found?
+
+SauceDemo is a training fixture whose defects are deliberately planted and switched on by
+the account signing in. Finding those shows the ground was covered; it is not a discovery.
+This separation is the honest reading of the log.
+
+**Planted — gated on a username, and there to be found (13)**
+
+DEF-001 to DEF-011, DEF-013, DEF-014. Every one of them is behind a check on the
+signed-in account in the application's own code (`docs/STATIC_ANALYSIS.md`, section 4).
+`standard_user` experiences none of them.
+
+**Not planted — properties of the build, affecting everyone (4)**
+
+| Defect | Why it is not part of the exercise |
+|---|---|
+| **DEF-012** | Error telemetry addressed to unreplaced build placeholders. Affects all six accounts, including `standard_user`. A configuration mistake that shipped, not a lesson someone wrote. |
+| **DEF-015** | The cart is held in `localStorage` and nothing clears it at sign-out, so it crosses between people on one browser. No account check is involved — it is how the state model works. |
+| **DEF-016** | The typed password is written into the DOM as a plain HTML attribute. A property of how the form is built, present for every account. |
+| **DEF-017** | The API reports a *missing* API key on a request that sent one. A different system entirely, and nothing about ReqRes is seeded. |
+
+Two of these four were found by the automated suites rather than by exploring: DEF-016 by
+a routine check that the password field is masked, DEF-017 by a test asserting that an
+unknown path returns 404. Neither would have been noticed by clicking through the
+application, which is the clearest argument in this exercise for automating the obvious
+checks and not only the interesting ones.
+
 ## Reconciliation with the static analysis
 
 `STATIC_ANALYSIS.md` made predictions from reading the application's code. Honesty

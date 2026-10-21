@@ -16,16 +16,21 @@ continue.
 made at all. The release-readiness criteria in the test plan (§14.1) treat an unanswered
 blocking question as a reason to hold a release.
 
-| ID | Question | Blocking |
-|---|---|---|
-| Q-01 | What is the authoritative source of requirements? | no |
-| Q-02 | Which regions does the shop serve, and how is tax determined? | **yes** |
-| Q-03 | What should happen to the cart at sign-out and across users? | **yes** |
-| Q-04 | Should a customer be able to buy more than one of an item? | no |
-| Q-05 | Is there an availability model, and what happens when an item becomes unavailable? | no |
-| Q-06 | Which browsers and devices are supported, and which pages must be protected? | no |
-| Q-07 | What accessibility conformance level is the target? | no |
-| Q-08 | Should error telemetry carry the username and cart contents off-site? | **yes** |
+| ID | System | Question | Blocking |
+|---|---|---|---|
+| Q-01 | both | What is the authoritative source of requirements? | no |
+| Q-02 | UI | Which regions does the shop serve, and how is tax determined? | **yes** |
+| Q-03 | UI | What should happen to the cart at sign-out and across users? | **yes** |
+| Q-04 | UI | Should a customer be able to buy more than one of an item? | no |
+| Q-05 | UI | Is there an availability model, and what happens when an item becomes unavailable? | no |
+| Q-06 | UI | Which browsers and devices are supported, and which pages must be protected? | no |
+| Q-07 | UI | What accessibility conformance level is the target? | no |
+| Q-08 | UI | Should error telemetry carry the username and cart contents off-site? | **yes** |
+| Q-09 | **API** | Where is the published contract, and is the response envelope part of it? | **yes** |
+| Q-10 | **API** | Is `id` meant to be an integer or a string? | no |
+| Q-11 | **API** | What should a consumer do when the rate limit is reached? | **yes** |
+| Q-12 | **API** | Is the authentication token meant to be the same for every caller? | **yes** |
+| Q-13 | **API** | What is the intended behaviour at the edges of pagination? | no |
 
 ---
 
@@ -202,3 +207,112 @@ may be attached to a report, and under which agreement with the processor.
 **Assumed meanwhile.** Recorded as an observation and a defect against the broken
 address. No assumption is made about what the payload should contain, because that is
 not a decision testing can make.
+
+---
+
+## Questions about the API
+
+Seven of the first eight questions concern the web shop, which reflects where the
+exploratory time went rather than where the uncertainty is. The API has as little
+specification behind it, and the questions below were raised from what testing it showed.
+
+---
+
+### Q-09 · Where is the published contract, and is the response envelope part of it?
+**System:** API · **Blocking: yes.**
+
+**Observed.** No specification, schema or OpenAPI document accompanies the service. Every
+response also carries two blocks the consumer did not ask for — `support` and `_meta` —
+whose contents change between responses. One of them was seen to contain
+`"variant": "v1_b"`, which reads like the provider running an experiment on its own
+marketing copy inside the payload.
+
+**Why it matters.** Without a published contract, "the response shape is correct" is our
+reading of today's responses rather than a promise. This suite validates against schemas
+we wrote by observing the service; it would catch a change, but it cannot say whether the
+change was permitted. And a consumer cannot tell which fields are stable: an envelope that
+shifts under an experiment is not something to build on.
+
+**To decide.** Where the contract is published; which fields are guaranteed; whether the
+envelope is part of the contract or provider-controlled decoration.
+
+**Assumed meanwhile.** Strict validation of the fields a consumer uses, tolerant of
+everything else — the *tolerant reader* approach described in the test plan, §4.
+
+---
+
+### Q-10 · Is `id` meant to be an integer or a string?
+**System:** API · **Blocking:** no.
+
+**Observed.** `GET /users/2` returns `"id": 2`. `POST /users` returns `"id": "849"`. The
+same field name carries a different type depending on the direction.
+
+**Why it matters.** A consumer that creates a record and then reads it back has to handle
+both, and a typed client will reject one of them. It is the kind of inconsistency that
+produces a defect in somebody else's codebase rather than in this one.
+
+**To decide.** Which type is correct, and whether the other is a defect.
+
+**Assumed meanwhile.** Recorded as an observation and asserted as it is, so a change in
+either direction is noticed. Not reported as a defect: no contract says which is right.
+
+---
+
+### Q-11 · What should a consumer do when the rate limit is reached?
+**System:** API · **Blocking: yes.**
+
+**Observed.** The service allows **40 requests per day from one address** without an
+account, and answers `429` with `rate_limit_exceeded` beyond that. The response carries
+no `Retry-After` header and no indication of when the allowance resets.
+
+**Why it matters.** A consumer cannot behave correctly without knowing when to try again.
+Without `Retry-After` the only options are to guess an interval or to retry blindly, and
+retrying blindly against a service that is already refusing is how a limit becomes an
+outage. For this suite it is also an operational constraint: a full run costs 29 requests,
+so two runs a day exhaust the allowance.
+
+**To decide.** The limits that apply in production use, the reset window, and whether
+`Retry-After` can be provided.
+
+**Assumed meanwhile.** The suite skips rather than fails on 429, spaces its requests, and
+documents its budget. It does not retry.
+
+---
+
+### Q-12 · Is the authentication token meant to be the same for every caller?
+**System:** API · **Blocking: yes.**
+
+**Observed.** `POST /login` and `POST /register` both return the identical token
+`QpwL5tke4Pnpja7X4`, on every call, for every account. It does not vary by user, by
+session or over time, and nothing in the response indicates an expiry.
+
+**Why it matters.** A token that is constant and shared is not authentication: it
+identifies nobody, cannot be revoked for one caller, and cannot expire. If this is a
+placeholder for a demo, the real contract — format, lifetime, refresh, revocation — is
+undefined, and a consumer built against this shape will have to be rewritten. If it is not
+a placeholder, it is a serious defect in a real deployment.
+
+**To decide.** Whether this is demo behaviour; and if so, what the real token contract is.
+
+**Assumed meanwhile.** Demo behaviour. The suite asserts a token is returned and that a
+refused sign-in returns none, but asserts nothing about its value, so it will not have to
+change when a real one appears.
+
+---
+
+### Q-13 · What is the intended behaviour at the edges of pagination?
+**System:** API · **Blocking:** no.
+
+**Observed.** `?page=0` returns page 1. `?page=99` returns `"page": 99` with an empty
+`data` array, while `total_pages` stays 2 — so the response contradicts itself. Neither is
+an error.
+
+**Why it matters.** A consumer paginating through results needs a reliable way to know it
+has reached the end. "Empty array" works; "page number echoed back beyond total_pages"
+invites an infinite loop in a naive client.
+
+**To decide.** Whether a page outside the range should be a 404, an empty page, or
+clamped to the last page.
+
+**Assumed meanwhile.** Current behaviour is recorded by TC-API-016 rather than judged, so
+a change is noticed and can then be discussed.

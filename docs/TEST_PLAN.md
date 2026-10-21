@@ -134,6 +134,31 @@ deliberate faults are the clearest way to evidence a console or network defect.
 A public mock REST API. Checked on 2026-10-19: it answers without an API key. Two
 risks outside our control are handled by design rather than wished away — see §9.
 
+### 3.3 What these systems are, and what that means for this report
+
+Neither system under test is a business. SauceDemo is a training fixture built to be
+tested against: six products, no payment, no fulfilment, no stock, no server of any kind,
+and defects that switch on the name of the account signing in. ReqRes is a mock API for
+building a front end against before a back end exists — writes are not stored, and every
+caller receives the same authentication token. The brief says as much: they "stand in
+for" a deliverable rather than being one.
+
+That changes how impact may honestly be written, and there are two ways to get it wrong.
+One is to describe a fixture as though it were a shop — "this is costing the business
+money", "customers will leave" — none of which is knowable here, and a confident
+invention devalues everything around it. The other is to shrug at a demo and report
+nothing of consequence.
+
+This report takes the middle position throughout: it states what the system **does**,
+evidenced, and states impact **conditionally** — "in a real shop this would be…". Where
+severity reflects the fixture rather than the mechanism, it says so, as in DEF-016, where
+the severity is Minor only because the password is printed on the sign-in page anyway.
+
+It follows that a defect count is not an achievement. Most of what is in the defect log
+was put there deliberately by the people who built the fixture, and finding it proves
+only that the ground was covered. What the log separates, and what is worth reading, is
+which findings **nobody planted** — see the classification at the end of `DEFECTS.md`.
+
 ## 4. Test approach
 
 | Level / type | Technique | Where |

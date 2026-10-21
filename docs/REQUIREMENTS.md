@@ -21,11 +21,17 @@ Keeping the two apart matters: a defect raised against an explicit requirement r
 the client's own words, while a defect raised against a derived one rests on our reading
 of the system, and a reader is entitled to know which they are looking at.
 
+Every requirement also names the **system** it belongs to. The two systems under test are
+unrelated — nothing in the UI calls the API — so a requirement belongs to one of them, and
+mixing them in one list without saying which is which would suggest a connection that does
+not exist.
+
 ---
 
 ## Explicit requirements
 
 ### REQ-001 · Login and access control
+**System:** UI
 **Type:** Explicit
 **Source:** Challenge brief, page 3, scenario 1
 
@@ -38,6 +44,7 @@ of the system, and a reader is entitled to know which they are looking at.
 ---
 
 ### REQ-002 · Cart and checkout
+**System:** UI
 **Type:** Explicit
 **Source:** Challenge brief, page 3, scenario 2
 
@@ -49,6 +56,7 @@ of the system, and a reader is entitled to know which they are looking at.
 ---
 
 ### REQ-003 · Sorting and data display
+**System:** UI
 **Type:** Explicit
 **Source:** Challenge brief, page 3, scenario 3
 
@@ -60,6 +68,7 @@ of the system, and a reader is entitled to know which they are looking at.
 ---
 
 ### REQ-004 · API contract validation
+**System:** **API**
 **Type:** Explicit
 **Source:** Challenge brief, page 3, scenario 4
 
@@ -72,6 +81,7 @@ of the system, and a reader is entitled to know which they are looking at.
 ---
 
 ### REQ-005 · Defect reproduction at the network level
+**System:** UI
 **Type:** Explicit
 **Source:** Challenge brief, page 3, scenario 5
 
@@ -90,6 +100,7 @@ and error telemetry, and that is where this requirement is satisfied. See
 ## Derived requirements — assumptions, not client statements
 
 ### REQ-006 · Protected pages require a session
+**System:** UI
 **Type:** Derived — assumption
 **Basis:** Opening `/inventory.html` without a session is refused with an error message,
 so refusing unauthenticated access is intended behaviour rather than an accident. The
@@ -101,6 +112,7 @@ four of them are not linked from anywhere in the interface.
 ---
 
 ### REQ-007 · Cart state behaves predictably across navigation
+**System:** UI
 **Type:** Derived — assumption
 **Basis:** The cart survives navigation between pages, which only makes sense as
 intended behaviour. What should happen to it at sign-out, across browser restarts, and
@@ -114,6 +126,7 @@ is a feature or a defect.
 ---
 
 ### REQ-008 · The application responds within a reasonable time
+**System:** UI and API
 **Type:** Derived — assumption
 **Basis:** No performance target was given. One account is named
 `performance_glitch_user`, which implies the others are expected to be noticeably faster,
@@ -125,6 +138,7 @@ reported as a multiple of it rather than against an invented threshold.
 ---
 
 ### REQ-009 · The application is usable with assistive technology
+**System:** UI
 **Type:** Derived — assumption
 **Basis:** No accessibility target was stated. WCAG 2.1 level AA is assumed as the usual
 baseline for a customer-facing commercial site.
@@ -135,6 +149,7 @@ be called a pass or a failure.
 ---
 
 ### REQ-010 · Commerce rules: quantity, availability and the cart lifecycle
+**System:** UI
 **Type:** Derived — assumption
 **Basis:** The brief says nothing about rules every shop must define. The application
 fixes quantity at one unit per item, has no concept of stock or availability at all, and
@@ -148,18 +163,18 @@ application alone.
 
 ## Coverage check
 
-| Requirement | Type | Cases | Covered |
-|---|---|---|---|
-| REQ-001 | Explicit | 15 | yes |
-| REQ-002 | Explicit | 20 | yes |
-| REQ-003 | Explicit | 14 | yes |
-| REQ-004 | Explicit | 18 | yes |
-| REQ-005 | Explicit | 3 | yes |
-| REQ-006 | Derived | 4 | yes |
-| REQ-007 | Derived | 4 | yes |
-| REQ-008 | Derived | 3 | yes |
-| REQ-009 | Derived | 3 | yes |
-| REQ-010 | Derived | 6 | yes |
+| Requirement | System | Type | Cases | Covered |
+|---|---|---|---|---|
+| REQ-001 | UI | Explicit | 15 | yes |
+| REQ-002 | UI | Explicit | 20 | yes |
+| REQ-003 | UI | Explicit | 14 | yes |
+| REQ-004 | **API** | Explicit | 18 | yes |
+| REQ-005 | UI | Explicit | 3 | yes |
+| REQ-006 | UI | Derived | 4 | yes |
+| REQ-007 | UI | Derived | 4 | yes |
+| REQ-008 | UI and API | Derived | 3 | yes |
+| REQ-009 | UI | Derived | 3 | yes |
+| REQ-010 | UI | Derived | 6 | yes |
 
 Every requirement has at least one case. The reverse check — that every case traces back
 to a requirement — is in the traceability matrix in the README.
