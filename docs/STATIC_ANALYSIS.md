@@ -40,15 +40,23 @@ in separate documents.
 
 | Source | What it gives | Where it is recorded | How much it proves |
 |---|---|---|---|
-| **Experience of similar systems** | an idea of *where to look* | test plan §2.1, and the derived requirements | Least. It is a hypothesis about a class of system, not about this one. |
-| **Reading the code** | what the author *intended* | **this document** | Strong about intent. Silent about behaviour. |
-| **Running the system** | what actually *happens* | the exploratory sessions, `TEST_CASES.md`, `DEFECTS.md` | The only source from which a defect may be raised. |
+| **Experience of similar systems** | an idea of *where to look* | test plan §2.1, and the derived requirements | **Nothing, on its own.** It describes what systems *like* this one often do, which may not be true of this one at all. It raises a question; it never answers one. |
+| **Reading the code** | what the author *intended* | **this document** | **Intent, and only intent.** What is written is not the same as what happens: a branch may be unreachable, the framework may intervene, timing may change the result. |
+| **Running the system** | what actually *happens* | the exploratory sessions, `TEST_CASES.md`, `DEFECTS.md` | **Behaviour.** The only source from which a defect may be raised. |
 
-An example of each, from this project. Knowing that a single-page application re-implements
-every route guard in the browser is experience: it said *look at the routes*. Reading the
-router showed that eleven exist and four are linked from nowhere — intent. Opening all
-nine without a session and finding each one refused with the page named — behaviour, and
-the only one of the three that could be reported as a result.
+An example of all three on one subject. Knowing that a single-page application
+re-implements every route guard in the browser is experience, and it said *look at the
+routes*. Reading the router showed that eleven exist and four are linked from nowhere —
+intent. Opening all nine without a session and finding every one refused, with the page
+named in the message — behaviour, and the only one of the three that could be reported as
+a result.
+
+That example also shows why the first row proves nothing. The experience that sent us
+looking — that route guards are often missed in applications of this kind — turned out to
+be **wrong about this application**: all nine routes are guarded correctly. The hypothesis
+had done its job by sending us to check, and writing it into a report as a finding would
+have been an invention. The same happened with stock: shops usually model availability,
+and this one has no concept of it anywhere.
 
 **This document is the middle row, and nothing more.** It is not a record of how the
 system behaves, and reading code is a poor way to learn that: a branch may be
