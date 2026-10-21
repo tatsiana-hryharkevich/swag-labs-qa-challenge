@@ -5,10 +5,6 @@ specification: a web shop and a REST API.
 
 **Author:** Tatsiana Hryharkevich · **Date:** October 2026
 
-> ⚠️ **Work in progress.** Planning and analysis are complete; execution and the
-> automated suites are being built. Sections marked *filled after execution* are
-> placeholders. This banner is removed before submission.
-
 ---
 
 ## Start here
@@ -23,6 +19,8 @@ specification: a web shop and a REST API.
 | [Bug Report](docs/BUG_REPORT.md) | One defect documented in full, with evidence at the request/response level |
 | [Executed Cases](docs/TEST_CASES.md) | Every case and its result |
 | [Exploratory Sessions](docs/EXPLORATORY_SESSIONS.md) | Session charters, findings and debriefs |
+| [Performance](docs/PERFORMANCE.md) | Client-side measurements, and why no load testing was done |
+| [Accessibility](docs/ACCESSIBILITY.md) | Automated rule checks, and what a clean result does not prove |
 
 ---
 
@@ -143,10 +141,8 @@ each defect back to the case that found it.
 | REQ-006 | 4 (TC-UI-010–TC-UI-013) | 4 | — |
 | REQ-007 | 4 (TC-UI-024, TC-UI-034, TC-UI-090, TC-UI-093) | 3 | DEF-015 |
 | REQ-008 | 3 (TC-API-018, TC-UI-080, TC-UI-081) | 1 | DEF-013 |
-| REQ-009 | 3 (TC-UI-082–TC-UI-084) | 0 | — |
+| REQ-009 | 4 (TC-UI-082–TC-UI-085) | 4 | — |
 | REQ-010 | 6 (TC-UI-090–TC-UI-095) | 4 | DEF-015 |
-
-Requirements: 10 · cases in the plan: 81 · cases implemented: 66 · defects linked to a case: 16
 
 **This table is generated, not typed**, and the generator also checks it:
 
@@ -159,25 +155,76 @@ A requirement with no case, a test whose case id is not in the plan, or a defect
 at a case that does not exist all fail the check — and the check runs in CI on every
 change. Traceability that nothing verifies is a claim; this is a rule.
 
-Two rows are deliberately short of full automation. REQ-008 and REQ-009 are the
-non-functional checks in the extended block: the performance measurements exist (DEF-013
-records them) but the accessibility scan has not been written. REQ-002 and REQ-003 keep a
-few manual cases where judging the intended behaviour needs a person and no
-specification offers one.
-
 ---
 
 ## Results
 
-*Filled after execution* — counts by status, defects by severity, and the release
-recommendation built from the criteria in test plan §14.
+### The suites
+
+| Suite | Tests | Passed | Known failures | Unexplained failures |
+|---|---|---|---|---|
+| UI (Playwright) | 67 | 49 | 18 | **0** |
+| API (pytest) | 31 | 31 | 0 | **0** |
+
+Every known failure names the defect it waits on. No test carries that marker without a
+logged defect behind it, and the smoke profile runs in under two seconds.
+
+### What was found
+
+**17 defects, 3 observations and 13 open questions.**
+
+| Severity | Count |
+|---|---|
+| Critical | 2 |
+| Major | 12 |
+| Minor | 3 |
+
+The two Critical defects are the same failure wearing different clothes: **neither
+`problem_user` nor `error_user` can complete a purchase**, and in both cases the
+application says nothing at all. One cannot pass the checkout form because the Last Name
+field writes into First Name; the other can, but the Finish button silently does nothing.
+
+**Thirteen of the seventeen were planted** — SauceDemo switches defects on by account, by
+design. Four were not, and those are the ones worth reading: broken error telemetry
+(DEF-012), a cart that crosses between people on a shared browser (DEF-015), a password
+written into the DOM as plain text (DEF-016), and an API that reports a missing key on a
+request that sent one (DEF-017). Two of the four were found by the automated suites
+rather than by exploring.
+
+### The release recommendation
+
+Judged against the criteria in test plan §14, with the caveat that neither system is ours
+to release:
+
+> UI suite: 67 of 67 executed — 49 passed, 18 known failures, all logged and linked. API
+> suite: 31 of 31 executed, all passed. Defects: 2 Critical open with no workaround, 12
+> Major, 3 Minor. Open questions blocking a decision: 6.
+>
+> **Recommendation: do not ship.** Two accounts cannot complete a purchase at all, which
+> is a stop criterion on its own. Separately, Q-02 — which regions the shop serves and how
+> tax is determined — must be answered before any order total can be called correct.
 
 ---
 
 ## Time spent
 
-*Filled after execution.* Reported split between the four-hour core scope and the
-extended work done beyond it, so that prioritisation is visible rather than claimed.
+The clock was not run, so no figure is claimed here. What can be stated honestly is the
+shape of the work and what was prioritised.
+
+**The four-hour core scope is complete**: the test plan, requirements and open questions;
+exploratory sessions across all six accounts; the UI and API suites; the detailed bug
+report; CI; and this README.
+
+**Beyond it**, and marked as such throughout: the static analysis of the application's
+shipped JavaScript, the performance measurements, the accessibility scan, and the
+generated traceability check.
+
+**Elapsed time exceeded four hours**, and the reason is worth stating plainly: the
+documents were reviewed and rewritten repeatedly — terminology unified, dense phrasing
+replaced, contradictions found and fixed, one measurement discarded as taken with the
+wrong instrument. Under a hard four-hour limit the extended block would have been dropped
+first, exactly as the test plan says it would, and the core scope would still have been
+delivered.
 
 ---
 

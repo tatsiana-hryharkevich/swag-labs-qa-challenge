@@ -394,6 +394,7 @@ plan calls a known failure.
 | TC-UI-082 | Automated accessibility rules: login page | P3 | Automated |
 | TC-UI-083 | Automated accessibility rules: catalogue page | P3 | Automated |
 | TC-UI-084 | Automated accessibility rules: checkout form | P3 | Automated |
+| TC-UI-085 | The accessibility scan detects a violation when one is introduced | P3 | Automated |
 
 ### 6.6 [UI] Exploratory sessions
 

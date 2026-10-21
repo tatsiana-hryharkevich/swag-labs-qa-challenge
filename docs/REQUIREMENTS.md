@@ -144,7 +144,7 @@ reported as a multiple of it rather than against an invented threshold.
 baseline for a customer-facing commercial site.
 **Open question:** Q-07 — the target level has to be confirmed before any result here can
 be called a pass or a failure.
-**Covered by:** TC-UI-082, TC-UI-083, TC-UI-084
+**Covered by:** TC-UI-082, TC-UI-083, TC-UI-084, TC-UI-085
 
 ---
 
@@ -173,7 +173,7 @@ application alone.
 | REQ-006 | UI | Derived | 4 | yes |
 | REQ-007 | UI | Derived | 4 | yes |
 | REQ-008 | UI and API | Derived | 3 | yes |
-| REQ-009 | UI | Derived | 3 | yes |
+| REQ-009 | UI | Derived | 4 | yes |
 | REQ-010 | UI | Derived | 6 | yes |
 
 Every requirement has at least one case. The reverse check — that every case traces back
