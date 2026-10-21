@@ -41,10 +41,17 @@ treated as two parallel scopes sharing one repository and one run command.
 
 ## Setup
 
-Requires Node 18+, Python 3.10+ and [uv](https://docs.astral.sh/uv/).
+Requires Node 18+ and Python 3.10+.
 
 ```bash
 make install        # installs Node and Python dependencies and the Playwright browser
+```
+
+`make install` uses [uv](https://docs.astral.sh/uv/) for the Python side. Without uv:
+
+```bash
+npm ci && npx playwright install chromium     # UI suite
+python -m pip install -r requirements.txt     # API suite, then run it with: pytest tests/api
 ```
 
 ## Running the tests
