@@ -32,6 +32,36 @@ much of the exploratory testing from "click around and hope" into targeted confi
 It cannot replace exploration, because it only shows what the author wrote and not how
 it behaves, but it makes exploration far cheaper.
 
+### Three sources of knowledge, and what each is worth
+
+Testing a system with no specification draws on three different kinds of knowledge. They
+are easy to blur together and they carry very different weight, so this report keeps them
+in separate documents.
+
+| Source | What it gives | Where it is recorded | How much it proves |
+|---|---|---|---|
+| **Experience of similar systems** | an idea of *where to look* | test plan §2.1, and the derived requirements | Least. It is a hypothesis about a class of system, not about this one. |
+| **Reading the code** | what the author *intended* | **this document** | Strong about intent. Silent about behaviour. |
+| **Running the system** | what actually *happens* | the exploratory sessions, `TEST_CASES.md`, `DEFECTS.md` | The only source from which a defect may be raised. |
+
+An example of each, from this project. Knowing that a single-page application re-implements
+every route guard in the browser is experience: it said *look at the routes*. Reading the
+router showed that eleven exist and four are linked from nowhere — intent. Opening all
+nine without a session and finding each one refused with the page named — behaviour, and
+the only one of the three that could be reported as a result.
+
+**This document is the middle row, and nothing more.** It is not a record of how the
+system behaves, and reading code is a poor way to learn that: a branch may be
+unreachable, a framework may intervene, and timing changes everything. Both happened
+here. The order total is doubled for `problem_user` in the code, and no customer can ever
+reach the page where that applies, because checkout is blocked a step earlier. The
+five-second freeze was predicted correctly from the code and the first measurement still
+missed it, because the instrument was wrong.
+
+That is why every entry below is written as a prediction with the case that settles it,
+why none entered the defect log before being reproduced in a browser, and why the last
+section reconciles what was predicted against what execution actually showed.
+
 ## 2. Architecture
 
 **There is no backend.** The catalogue is a static array compiled into the bundle:
