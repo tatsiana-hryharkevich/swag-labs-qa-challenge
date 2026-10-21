@@ -10,7 +10,7 @@
 Defects found during execution, and observations that are not defects. Severity
 definitions and the rules every record must satisfy are in the test plan, §8.
 
-**Status: 16 defects recorded, all reproduced in a browser with evidence captured.**
+**Status: 17 defects recorded, all reproduced in a browser with evidence captured.**
 
 Found during exploratory sessions ES-01 to ES-03 on 2026-10-21. Every record below was
 reproduced from a clean browser context; none is carried over from the predictions in
@@ -35,6 +35,7 @@ are reconciled at the end of this document.
 | DEF-014 | One product image is replaced and the layout is broken | visual_user | Minor |
 | DEF-015 | The cart outlives its owner and is shown to the next person who signs in | all accounts | Major |
 | DEF-016 | The typed password is written into the DOM as a plain attribute | all accounts | Minor here, serious elsewhere |
+| DEF-017 | The API reports a *missing* API key on a request that sent one | ReqRes | Minor |
 
 ---
 
@@ -516,6 +517,56 @@ the sign-in page rather than re-displaying the catalogue.
 **Arithmetic on the order summary is correct** for every account that can reach it.
 Three items totalling $73.97 produced `Tax: $5.92` and `Total: $79.89`; 8% of $73.97 is
 $5.9176, correctly rounded. The same held for `error_user` at a different basket value.
+
+---
+
+### DEF-017 · The API reports a missing API key on a request that sent one
+
+**System:** ReqRes (API) · **Requirement:** REQ-004 — "confirm how the API behaves for
+invalid input"
+**Covered by test:** `tests/api/test_errors.py::test_tc_api_017_an_unknown_path_is_refused…`
+**Severity:** Minor · **Priority:** Low · **Status:** Open
+
+**Why this is a defect.** Reproduced on every attempt, on two different unknown paths,
+with the header demonstrably present in the request.
+
+**Steps to reproduce**
+
+```bash
+curl -i -H "x-api-key: reqres-free-v1" https://reqres.in/api/no-such-collection
+```
+
+**Expected:** either `404 Not Found`, or — if the service deliberately refuses to reveal
+which paths exist — a refusal whose reason matches what actually happened.
+
+**Actual:**
+
+```json
+HTTP/2 401
+{"error":"missing_api_key",
+ "message":"The x-api-key header is required for this endpoint.",
+ "hint":"Send x-api-key for admin calls (/api/*) or Authorization: Bearer ..."}
+```
+
+The header *was* sent. The service answers `missing_api_key` and tells the caller to send
+the header they already sent.
+
+**What is and is not being reported.** Answering 401 rather than 404 is **not** the
+defect: refusing without confirming whether a path exists is a reasonable choice, since
+it stops a caller mapping the API surface by probing. The defect is the reason given. A
+consumer following this message will spend their time checking a header that is
+correct, and will not look for the real cause — a wrong path.
+
+**Consequence.** Minor, and purely diagnostic: no behaviour is wrong, but anyone
+debugging an integration is sent in the wrong direction. The right error for a key that
+is present but not accepted here would be `invalid_api_key` or
+`endpoint_requires_different_credentials`.
+
+**How it was found.** By the API suite, not by exploring. A test asserting that an
+unknown path returns 404 failed, and the guard that protects this suite from a third
+party's rate limit skipped it as a key problem — which is exactly what the service's own
+message claimed. Two things had to be separated before the finding was visible: the
+suite's own handling of 401, and what a 401 actually meant here.
 
 ---
 

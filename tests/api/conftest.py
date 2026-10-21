@@ -66,7 +66,14 @@ class ApiClient:
             )
         return response
 
-    def request(self, method: str, path: str, **kwargs) -> requests.Response:
+    def request(self, method: str, path: str, guard: bool = True, **kwargs) -> requests.Response:
+        """Set ``guard=False`` where a 4xx is the thing under test.
+
+        The guard exists to stop a third party's rate limit or key policy being
+        reported as a broken contract. A test that deliberately probes an error path
+        needs the raw response instead, or the guard would hide the very answer it
+        was written to check.
+        """
         self.calls += 1
         time.sleep(REQUEST_SPACING_SECONDS)
         try:
@@ -75,7 +82,7 @@ class ApiClient:
             )
         except requests.RequestException as exc:
             pytest.skip(f"ReqRes is unreachable on {method} {path}: {type(exc).__name__}")
-        return self._guard(response, method, path)
+        return self._guard(response, method, path) if guard else response
 
     def get(self, path, **kw):
         return self.request("GET", path, **kw)

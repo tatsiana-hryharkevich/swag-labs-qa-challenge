@@ -38,6 +38,22 @@ def test_tc_api_017_an_empty_body_is_rejected(api):
 
 
 @pytest.mark.P3
-def test_tc_api_017_an_unknown_path_is_not_found(api):
-    response = api.get("/no-such-collection")
-    assert response.status_code == 404
+def test_tc_api_017_an_unknown_path_is_refused_without_revealing_whether_it_exists(api, validate):
+    """An unknown path answers 401, not 404.
+
+    Refusing rather than denying existence is a defensible choice -- it stops a caller
+    mapping the surface by probing. What is not defensible is the reason given: the
+    service reports a *missing* API key on a request that carried one. Recorded as
+    DEF-017.
+
+    ``guard=False`` because this test is about a 401: the client's guard would
+    otherwise skip it, treating the response as a key problem rather than the answer
+    under examination.
+    """
+    response = api.get("/no-such-collection", guard=False)
+    assert response.status_code == 401
+    body = response.json()
+    assert body["error"] == "missing_api_key"
+    # Documents the defect rather than asserting the behaviour is correct: the request
+    # did send x-api-key, so "missing" is the wrong word.
+    assert "x-api-key" in body["message"]
