@@ -263,12 +263,23 @@ unversioned test plan would all be unacceptable, regardless of how good the test
 
 GitHub Actions, with the UI and API jobs running in parallel.
 
-| Trigger | Profile | Why |
-|---|---|---|
-| Pull request | Smoke, then regression | The merge gate. Fast feedback while the change is fresh. |
-| Push to the main branch | Regression | Confirms what actually landed. |
-| Nightly schedule | Full, plus accessibility and timings | Catches slow drift and third-party contract changes without slowing anyone down. |
-| Manual dispatch | Any profile | For investigating a specific failure. |
+| What happens | Declared in the workflow as | Profile | Why |
+|---|---|---|---|
+| Someone opens or updates a pull request | `on: pull_request` | smoke, then regression | The merge gate. Fast feedback while the change is fresh. |
+| A change lands on the main branch | `on: push` | regression | Confirms what actually landed. |
+| 03:00 UTC, every day | `on: schedule`, `cron: '0 3 * * *'` | full, with accessibility and timings | Catches slow drift and third-party contract changes without slowing anyone down. |
+| Someone chooses to | `on: workflow_dispatch` | any, picked from a dropdown | Investigating a specific failure. |
+
+**Nobody starts any of these by hand, including the nightly run.** The first two fire on
+the Git event; the nightly one is fired by GitHub's own scheduler from the cron
+expression in `.github/workflows/tests.yml`. Only the last is manual, and it exists for
+the times a person wants a specific profile now.
+
+Two things about scheduled runs that are worth knowing before relying on one: they only
+ever run against the default branch, and GitHub disables them automatically after 60 days
+without activity in the repository — so a quiet repository stops being watched, silently.
+On a real project that is a reason to alert on *absence* of a nightly result, not only on
+a failing one.
 
 Supporting detail: reports, traces, video and HAR uploaded as artifacts on failure, with a
 retention period; branch protection so the regression profile must pass before a merge;
