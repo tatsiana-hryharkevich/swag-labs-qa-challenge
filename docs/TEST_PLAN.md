@@ -534,13 +534,38 @@ response, with no ordering dependency between tests.
 | Decision | Rationale |
 |---|---|
 | Playwright for the UI | It waits for elements by itself, which removes the main cause of unstable tests. It also records traces, HAR files and video, which serve as defect evidence |
-| JavaScript (ESM) | The author's strongest language, so every line can be explained rather than merely run |
+| JavaScript (ESM) | Three reasons, in order of weight — see the note below the table |
 | pytest + requests for the API | Named explicitly in the brief; validates endpoints independently of the UI |
 | Page objects, `data-test` selectors | When a selector changes it changes in one file, and selectors do not depend on layout or wording |
 | Case IDs in test titles | The link back to the plan is visible in the test report, not only in the plan |
 | Priority tags in test titles (`@P1`, `@P2`, `@P3`, `@smoke`) | A run can be narrowed to one profile without maintaining separate lists of tests, and results can be read by priority. See §5.1 |
 | No fixed sleeps anywhere | A fixed wait is either wasted time or not long enough, and both are faults in a suite |
 | Tests independent and safe to run in parallel | The brief grades reliability, "not just that it runs once" |
+
+**Why JavaScript for the UI suite.** Three reasons, and they are worth separating
+because only the first two apply to this exercise.
+
+1. **It is the language I can own.** Every line here can be explained rather than merely
+   run, which matters more than any property of the language itself.
+2. **It is the language the application is written in, and that was used.** Designing
+   these tests started by reading the JavaScript the site serves: the eleven routes, the
+   catalogue of per-account faults, and the telemetry placeholders all came from there
+   (`docs/STATIC_ANALYSIS.md`). Without being able to read it, half the targeted checks
+   in this suite would not exist.
+3. **In a real engagement it would be the team's language too** — which is the strongest
+   form of the argument and the one that does *not* apply here. A QA engineer writing the
+   same language as the front-end team reads their changes, shares their tooling, lets a
+   developer fix a failing test without learning another stack, and can move checks down
+   the pyramid with them (§4.1). None of that is available in this exercise: there is no
+   repository, no team and no pull requests.
+
+**What this reasoning does not claim.** The language of the system under test does not
+dictate the language of its tests. End-to-end tests drive a browser from the outside and
+never touch application code; Playwright for Python would drive the same browser
+identically. This suite proves the point itself — the API tests are written in Python
+against a service written in Node, and that is the right choice there for an unrelated
+reason: the brief names `pytest + requests`, and it is the language in which I work on
+back-end tests.
 
 ## 12. Reporting and evidence
 
