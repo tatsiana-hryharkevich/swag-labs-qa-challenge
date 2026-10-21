@@ -359,29 +359,57 @@ cannot be used without a mouse cannot be bought from.
 
 ### 5. Given only four hours, how did you decide what to test manually, what to automate, and what to skip?
 
-By asking what would cost the business most if it broke, and what would cost us most to
-check by hand repeatedly.
+Not by judgement at the end, but by a priority recorded against every case in the plan
+(§5) and a set of run profiles built from it (§5.1). The decision is therefore in the
+document, case by case, and can be argued with.
 
-**Automated** the revenue path and anything data-driven. Sign-in and checkout, because
-they carry the highest impact and because a reviewer will run them. Sorting, because four
-sort modes across several accounts is one parametrised loop — the cheapest coverage in
-the whole suite.
+**The rule.** P1 blocks a purchase or blocks access to the application, or the brief
+names it explicitly. P2 makes the experience worse or shows wrong data without blocking.
+P3 is low impact, or automating it costs more than it is worth in the time available.
+Applied to 82 cases that gave **36 P1, 28 P2, 18 P3**.
 
-**Manual** where a judgement about intended behaviour was needed and no specification
-offered one. Boundary input on the checkout form is the clearest example: each case
-needs someone to decide what *should* happen, and automating a guess only makes the
-guess permanent.
+**What happens regardless.** In this order, and nothing below begins before the item
+above it is finished:
 
-**Skipped, with the reason written down.** Load testing, because these are public demo
-sites belonging to someone else and generating load against them would be wrong
-regardless of the time available. Visual regression, because reference images taken on one
-machine do not match another and the tests would fail for the wrong reason.
-Cross-browser and mobile, because widening the surface before one browser is verified
-buys little.
+| | Work | Size | Why it cannot be cut |
+|---|---|---|---|
+| 1 | Test plan, requirements, open questions | ~20 min | If time runs out at any point, this is precisely what the brief asks to be left behind |
+| 2 | Smoke profile — 4 UI + 3 API cases | under 2 min | Answers whether the build is worth testing at all, before anything is spent on depth |
+| 3 | Exploratory sessions across all six accounts | 3 sessions, 50 min | Finds what no scripted case knows to ask. 12 of the 18 defects came from here |
+| 4 | **Logging every defect found, with evidence** | roughly a third of the time after a find | An unlogged defect is not a result |
+| 5 | All P1 automated — 12 checkout, 9 API contract, 8 sorting, 7 authentication | 36 cases | The revenue path, and the brief's five required scenarios |
+| 6 | The detailed bug report at the request/response level | ~30 min | Explicitly required, and the only artefact where depth beats breadth |
+| 7 | README, traceability matrix, CI | ~25 min | A suite nobody else can run has not been delivered |
 
-**Documents were written first and grown throughout**, not left to the end. If the time
-had run out at any point, the plan, the defect log and the open questions would still have
-been there — and the brief asks for exactly that in the event the work is unfinished.
+**Then, with time remaining:** the 28 P2 cases, automated where that is cheap and checked
+by hand where it is not.
+
+**The cut order**, decided in advance so it does not have to be improvised under
+pressure. Work is dropped from the bottom:
+
+1. The extended block — accessibility scan, performance write-up, session ES-04. 6 cases
+   and 2 documents, and the first thing to go because none of it is in the brief.
+2. The 10 manual and exploratory P3 cases.
+3. P2 cases that are not cheap to automate.
+4. The second and third account in a parametrised P1 case — keep `standard_user`, lose
+   the comparison.
+
+What is never cut is items 1 and 4 of the table above: the planning documents and the
+defect records. Coverage can be reported as incomplete; a finding that was seen and not
+written down cannot be recovered at all.
+
+**Defect work is budgeted, not assumed.** This is the part a time plan usually omits.
+Each of the 18 defects cost: reproduce from a clean session, confirm it is not an
+environment artefact, capture the evidence at the moment it is visible, and write it up
+well enough that a developer needs no follow-up question. Across 18 defects that was
+comparable to the time spent writing both suites. A plan that budgets only for *running*
+tests ends the day with "we found about twenty things" and nothing anyone can act on.
+
+**Skipped outright, each with the reason recorded in §2.3:** load testing, because these
+are public demo sites belonging to someone else; visual regression, because reference
+images taken on one machine do not match another and the tests would fail for the wrong
+reason; cross-browser and mobile, because widening the surface before one browser is
+verified buys little.
 
 ---
 
